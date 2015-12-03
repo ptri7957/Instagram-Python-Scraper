@@ -2,18 +2,18 @@ from instagram.client import InstagramAPI
 import json
 import csv
 
-access_token = 'Your access token'
-user_id = 'Your user id'
+access_token = '2253563781.137bf98.bd1c3693d2b84f80a7ab8d661f641437'
+user_id = '7210007' # kayla_itsines
 
 # Grab all posts from the user and returns a dictionary
 # of the media details
-def get_all_media():
+def get_all_media(user):
 	table = {'Data' : []}
 	api = InstagramAPI(access_token=access_token)
 	# The next variable is used for pagination while the 
 	# recent_media variable is to extract the first "page"
 	# of results
-	recent_media, next = api.user_recent_media(user_id=user_id)
+	recent_media, next = api.user_recent_media(user_id=user)
 	
 	# As long as there is a next_url or next_id, keep iterating
 	while next:
@@ -27,31 +27,51 @@ def get_all_media():
 		recent_media.extend(more_media)
 		
 		# Test to see whether function is working properly
-		if len(recent_media) >= 120:
-			break
+		# if len(recent_media) >= 500:
+		#	break
 	
 	# List out the media for the user
 	for media in recent_media:
 		temp = {}
-		temp['User'] = ("kayla_itsines")
-		temp['Caption'] = (media.caption.text.encode('utf-8'))
-		temp['Image'] = (str(media).strip("Media: "))
-		# Get number of likes for a post
-		likes = api.media_likes(media_id=temp['Image'])
-		temp['Likes'] = len(likes)
-		table['Data'].append(temp)
+		user_ = media.user.username
+		#print media.images
+		images = media.images['standard_resolution'].url
+		caption = ""
+		if media.caption:
+			caption = media.caption.text
+		else:
+			caption = ""
+		created_time = str(media.created_time)
+		img_id = str(media.id)
+		# comments list
+		temp_comment_list = media.comments
+		#print temp_comment_list
+		#temp_commenter_list = media.comments.from.username
+		comments = []
+		commenters = []
+		for comment in temp_comment_list:
+			comments.append(comment.text)
+			#commenters.append(comment.username)
+		#for commenter in temp_commenter_list:
+		#	commenters.append(commenter.text)
 		
-		# print media.caption.text.encode('utf-8')
-		# print "\n"
+		temp['User'] = user_
+		temp['Image'] = images
+		temp['Created_Time'] = created_time
+		temp['Caption'] = caption.encode('utf-8')
+		temp['Img_ID'] = img_id
+		temp['Comments'] = comments
+		#temp['Commenter'] = commenters
+		table['Data'].append(temp)
+
 	return table
 
 # write to json file
 file = open("kayla_itsines_media_details.json", "wb")
-json_data = json.dumps(get_all_media())
+json_data = json.dumps(get_all_media(user_id))
 file.write(json_data)
 file.close
 
-# Convert json file to csv
-file = csv.writer(open("kayla_itsines_data.csv", "wb+"))
+print "File created successfully"
 
 	
