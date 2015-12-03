@@ -2,7 +2,7 @@ from instagram.client import InstagramAPI
 import json
 import csv
 
-access_token = '2253563781.137bf98.bd1c3693d2b84f80a7ab8d661f641437'
+access_token = 'Your access token'
 user_id = 'Your user id'
 
 # Grab all posts from the user and returns a dictionary
