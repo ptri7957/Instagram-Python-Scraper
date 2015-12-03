@@ -2,8 +2,8 @@ from instagram.client import InstagramAPI
 import json
 import csv
 
-access_token = '2253563781.137bf98.bd1c3693d2b84f80a7ab8d661f641437'
-user_id = '7210007' # kayla_itsines
+access_token = 'ACCESS TOKEN'
+user_id = 'USER_ID' 
 
 # Grab all posts from the user and returns a dictionary
 # of the media details
@@ -67,7 +67,7 @@ def get_all_media(user):
 	return table
 
 # write to json file
-file = open("kayla_itsines_media_details.json", "wb")
+file = open("file.json", "wb")
 json_data = json.dumps(get_all_media(user_id))
 file.write(json_data)
 file.close
