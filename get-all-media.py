@@ -30,12 +30,12 @@ def get_all_media(user):
 		# if len(recent_media) >= 500:
 		#	break
 	
-	# List out the media for the user
+# List out the media for the user
 	for media in recent_media:
 		temp = {}
 		user_ = media.user.username
-		#print media.images
 		images = media.images['standard_resolution'].url
+		# Caption is empty if post does not have one
 		caption = ""
 		if media.caption:
 			caption = media.caption.text
@@ -45,23 +45,17 @@ def get_all_media(user):
 		img_id = str(media.id)
 		# comments list
 		temp_comment_list = media.comments
-		#print temp_comment_list
-		#temp_commenter_list = media.comments.from.username
 		comments = []
 		commenters = []
 		for comment in temp_comment_list:
 			comments.append(comment.text)
-			#commenters.append(comment.username)
-		#for commenter in temp_commenter_list:
-		#	commenters.append(commenter.text)
-		
+
 		temp['User'] = user_
 		temp['Image'] = images
 		temp['Created_Time'] = created_time
 		temp['Caption'] = caption.encode('utf-8')
 		temp['Img_ID'] = img_id
 		temp['Comments'] = comments
-		#temp['Commenter'] = commenters
 		table['Data'].append(temp)
 
 	return table
