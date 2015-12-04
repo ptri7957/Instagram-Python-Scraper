@@ -30,7 +30,7 @@ def get_all_media(user):
 		# if len(recent_media) >= 500:
 		#	break
 	
-# List out the media for the user
+        # List out the media for the user
 	for media in recent_media:
 		temp = {}
 		user_ = media.user.username
@@ -46,9 +46,9 @@ def get_all_media(user):
 		# comments list
 		temp_comment_list = media.comments
 		comments = []
-		commenters = []
-		for comment in temp_comment_list:
-			comments.append(comment.text)
+		comment_holder = api.media_comments(media.id)
+		for comment in comment_holder:
+			comments.append(str(comment).strip("Comment: "))
 
 		temp['User'] = user_
 		temp['Image'] = images
