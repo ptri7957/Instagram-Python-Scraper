@@ -2,18 +2,28 @@ from instagram.client import InstagramAPI
 import json
 import csv
 
-access_token = '2253563781.137bf98.bd1c3693d2b84f80a7ab8d661f641437'
-user_id = 'Your user id'
+'''
+TIMESTAMPS:
+1/1/2012 - 1325376000
+1/1/2013 - 1356998400
+1/1/2014 - 1388534400
+1/1/2015 - 1420070400
+1/1/2016 - 1451606400
+'''
+access_token = 'ACCESS_TOKEN'
+user_id = 'USER_ID'
 
 # Grab all posts from the user and returns a dictionary
 # of the media details
-def get_all_media():
+def get_all_media(user):
 	table = {'Data' : []}
 	api = InstagramAPI(access_token=access_token)
 	# The next variable is used for pagination while the 
 	# recent_media variable is to extract the first "page"
 	# of results
-	recent_media, next = api.user_recent_media(user_id=user_id)
+	recent_media, next = api.user_recent_media(user_id=user, 
+											   min_timestamp='1433116800', 
+											   max_timestamp='1451520000')
 	
 	# As long as there is a next_url or next_id, keep iterating
 	while next:
@@ -26,32 +36,61 @@ def get_all_media():
 		# variable
 		recent_media.extend(more_media)
 		
-		# Test to see whether function is working properly
-		if len(recent_media) >= 120:
-			break
-	
 	# List out the media for the user
 	for media in recent_media:
-		temp = {}
-		temp['User'] = ("kayla_itsines")
-		temp['Caption'] = (media.caption.text.encode('utf-8'))
-		temp['Image'] = (str(media).strip("Media: "))
-		# Get number of likes for a post
-		likes = api.media_likes(media_id=temp['Image'])
-		temp['Likes'] = len(likes)
-		table['Data'].append(temp)
+		user_ = media.user.username
+		images = media.link
+		# Caption is empty if post does not have one
+		caption = ""
+		if media.caption:
+			caption = media.caption.text
+		created_time = str(media.created_time)
+		img_id = str(media.id)
 		
-		# print media.caption.text.encode('utf-8')
-		# print "\n"
+		table['Data'].append({'User' : user_,
+							  'Image' : images,
+							  'Created_time' : created_time,
+							  'Caption' : caption.encode('utf-8'),
+							  'Img_ID' : img_id})
+
 	return table
 
-# write to json file
-file = open("kayla_itsines_media_details.json", "wb")
-json_data = json.dumps(get_all_media())
-file.write(json_data)
-file.close
-
-# Convert json file to csv
-file = csv.writer(open("kayla_itsines_data.csv", "wb+"))
-
+# Grab all comments in all media posted by the specified user
+def get_all_comments_from_media(user):
+	api = InstagramAPI(access_token=access_token)
+	# Remember to specify a friggin timestamp to prevent going over
+	# the limit of api calls
+	recent_media, next = api.user_recent_media(user_id=user,
+											   min_timestamp='1325376000',
+											   max_timestamp='1356998400')
+	comments_table = {'Data' : []}
+	while next:
+		more_media, next = api.user_recent_media(with_next_url=next)
+		recent_media.extend(more_media)
 	
+	for media in recent_media:
+		comments = api.media_comments(media.id)
+		for comment in comments:
+			comments_table['Data'].append({'User' : comment.user.username, 
+										   'Comment' : comment.text.encode('utf-8'),
+										   'Media_ID' : media.id,
+										   'Image' : media.link})
+
+	return comments_table
+	
+# write json data to csv file
+follower_data = get_all_comments_from_media(user_id)
+followers_data = follower_data['Data']
+csv_file = open('FILENAME', 'wb')
+csv_writer = csv.writer(csv_file)
+
+count = 0
+
+for data in followers_data:
+	if count == 0:
+		header = data.keys()
+		csv_writer.writerow(header)
+		count += 1
+	csv_writer.writerow(data.values())
+
+csv_file.close
