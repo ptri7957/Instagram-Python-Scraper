@@ -38,13 +38,13 @@ def get_all_media(user, access_token, filename, min_timestamp, max_timestamp):
 		img_id = str(media.id)
 		
 		media_table['Data'].append({'User' : user_,
-							  'Image' : images,
-							  'Created_time' : created_time,
-							  'Caption' : caption.encode('utf-8'),
-							  'Img_ID' : img_id,
-							  'Likes' : media.like_count,
-							  'Comments' : media.comment_count,
-							  'Filter' : media.filter})
+				            'Image' : images,
+					    'Created_time' : created_time,
+					    'Caption' : caption.encode('utf-8'),
+					    'Img_ID' : img_id,
+					    'Likes' : media.like_count,
+					    'Comments' : media.comment_count,
+					    'Filter' : media.filter})
 	
 	# write json data to csv file
 	media_data = media_table['Data']
