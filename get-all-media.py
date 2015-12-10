@@ -68,31 +68,19 @@ def get_all_media(user, access_token, filename, min_timestamp, max_timestamp):
 def get_all_followers(user, access_token, filename):
 	follower_table = {'Data' : []}
 	api = InstagramAPI(access_token=access_token)
-	followers, next = api.user_followed_by(user_id=user)
-	while next:
-		more_followers, next = api.user_followed_by(with_next_url=next)
-		followers.extend(more_followers)
+
+	fullname = username = ""
 	
-	for follower in followers:
-		follower_table['Data'].append({'Username' : follower.username,
-					       'Profile_picture' : follower.profile_picture,
-					       'ID' : follower.id,
-					       'Full_name' : follower.full_name})
-	followers_data = follower_table['Data']
-	csv_file = open(filename, 'wb')
-	csv_writer = csv.writer(csv_file)
-	
+	generator = api.user_followed_by(user_id=user, as_generator=True, max_pages=None)
 	count = 0
-	
-	for data in followers_data:
-		if count == 0:
-			header = data.keys()
-			csv_writer.writerow(header)
-			count += 1
-		csv_writer.writerow(data.values())
-		
-	csv_file.close()
-	print "%s created successfully" % filename
+	for page in generator:
+		count += 1
+		print count
+		#print page[:-1]
+		#print "\n"
+		for follower in page[:-1]:
+			print follower
+			print "\n"
 	return follower_table
 	
 # Grab all comments in all media posted by the specified user
