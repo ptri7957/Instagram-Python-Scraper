@@ -11,14 +11,14 @@ def get_user_details(user, access_token, filename):
 	user_details = api.user(user_id=user)
 	for details in user_details:
 		user_table['Data'].append({'Username' : details.username,
-								   'Bio' : details.bio,
-								   'Website' : details.website,
-								   'Profile_pic' : details.profile_picture,
-								   'Full_name' : details.full_name,
-								   'Posts' : details.counts.media,
-								   'Followed_by' : details.counts.followed_by,
-								   'Follows' : details.counts.follows,
-								   'ID' : details.id})
+					   'Bio' : details.bio,
+					   'Website' : details.website,
+					   'Profile_pic' : details.profile_picture,
+					   'Full_name' : details.full_name,
+					   'Posts' : details.counts.media,
+					   'Followed_by' : details.counts.followed_by,
+					   'Follows' : details.counts.follows,
+					   'ID' : details.id})
 	
 	user_data = user_table['Data']
 	csv_file = open(filename, 'wb')
@@ -45,8 +45,8 @@ def get_all_media(user, access_token, filename, min_timestamp, max_timestamp):
 	# recent_media variable is to extract the first "page"
 	# of results
 	recent_media, next = api.user_recent_media(user_id=user,
-											   min_timestamp=min_timestamp,
-											   max_timestamp=max_timestamp)
+						   min_timestamp=min_timestamp,
+						   max_timestamp=max_timestamp)
 	
 	# As long as there is a next_url or next_id, keep iterating
 	while next:
@@ -71,13 +71,13 @@ def get_all_media(user, access_token, filename, min_timestamp, max_timestamp):
 		img_id = str(media.id)
 		
 		media_table['Data'].append({'User' : user_,
-							  'Image' : images,
-							  'Created_time' : created_time,
-							  'Caption' : caption.encode('utf-8'),
-							  'Img_ID' : img_id,
-							  'Likes' : media.like_count,
-							  'Comments' : media.comment_count,
-							  'Filter' : media.filter})
+					    'Image' : images,
+					    'Created_time' : created_time,
+					    'Caption' : caption.encode('utf-8'),
+					    'Img_ID' : img_id,
+					    'Likes' : media.like_count,
+					    'Comments' : media.comment_count,
+					    'Filter' : media.filter})
 	
 	# write json data to csv file
 	media_data = media_table['Data']
@@ -108,9 +108,9 @@ def get_all_followers(user, access_token, filename):
 	
 	for follower in followers:
 		follower_table['Data'].append({'Username' : follower.username,
-									   'Profile_picture' : follower.profile_picture,
-									   'ID' : follower.id,
-									   'Full_name' : follower.full_name})
+					       'Profile_picture' : follower.profile_picture,
+					       'ID' : follower.id,
+					       'Full_name' : follower.full_name})
 	followers_data = follower_table['Data']
 	csv_file = open(filename, 'wb')
 	csv_writer = csv.writer(csv_file)
@@ -135,8 +135,8 @@ def get_all_comments_from_media(user, access_token, filename, min_timestamp, max
 	# Remember to specify a friggin timestamp to prevent going over
 	# the limit of api calls
 	recent_media, next = api.user_recent_media(user_id=user,
-											   min_timestamp=min_timestamp,
-											   max_timestamp=max_timestamp)
+						   min_timestamp=min_timestamp,
+						   max_timestamp=max_timestamp)
 	while next:
 		more_media, next = api.user_recent_media(with_next_url=next)
 		recent_media.extend(more_media)
@@ -145,10 +145,10 @@ def get_all_comments_from_media(user, access_token, filename, min_timestamp, max
 		comments = api.media_comments(media.id)
 		for comment in comments:
 			comments_table['Data'].append({'User' : comment.user.username, 
-										   'Comment' : comment.text.encode('utf-8'),
-										   'Media_ID' : media.id,
-										   'Image' : media.link,
-										   'Created_at' : comment.created_at})
+						       'Comment' : comment.text.encode('utf-8'),
+						       'Media_ID' : media.id,
+						       'Image' : media.link,
+						       'Created_at' : comment.created_at})
 	followers_data = comments_table['Data']
 	csv_file = open(filename, 'wb')
 	csv_writer = csv.writer(csv_file)
@@ -172,17 +172,17 @@ def get_likes_from_media(user, access_token, filename, min_timestamp, max_timest
 	api = InstagramAPI(access_token=access_token)
 	
 	recent_media, next = api.user_recent_media(user_id=user,
-											   min_timestamp=min_timestamp,
-											   max_timestamp=max_timestamp)
+					           min_timestamp=min_timestamp,
+						   max_timestamp=max_timestamp)
 	for media in recent_media:
 		media_like = api.media_likes(media.id)
 		for like in media_like:
 			media_likes['Data'].append({'Username' : like.username.encode('utf-8'),
-										'Profile_pic' : like.profile_picture,
-										'User_id' : str(like.id),
-										'Full_name' : like.full_name.encode('utf-8'),
-										'Media_ID' : media.id,
-										'Image' : media.link})
+						    'Profile_pic' : like.profile_picture,
+						    'User_id' : str(like.id),
+						    'Full_name' : like.full_name.encode('utf-8'),
+						    'Media_ID' : media.id,
+						    'Image' : media.link})
 	
 	likes_data = media_likes['Data']
 	csv_file = open(filename, 'wb')
@@ -229,22 +229,22 @@ def main():
 			get_user_details(user_id, access_token, argv[3])
 		elif argv[2] == "media":
 			get_all_media(user_id, 
-					  access_token, 
-					  argv[3], 
-					  '1388534400', 
-					  '1451606400')
+				      access_token, 
+				      argv[3], 
+				      '1388534400', 
+				      '1451606400')
 		elif argv[2] == "media_comments":
 			get_all_comments_from_media(user_id, 
-									access_token, 
-									argv[3], 
-									'1388534400', 
-									'1451606400')
+						    access_token, 
+						    argv[3], 
+						    '1388534400', 
+						    '1451606400')
 		elif argv[2] == "media_likes":
 			get_likes_from_media(user_id,
-								 access_token,
-								 argv[3],
-								 '1388534400', 
-								 '1451606400')
+					     access_token,
+					     argv[3],
+					     '1388534400', 
+					     '1451606400')
 		else:
 			print "Usage:"
 			print "$ python get-all-media.py <user_id> <option> <filename>"
